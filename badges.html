@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tria VIP Badges — How It Works</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080808;--card:#111;--surface:#181818;--border:rgba(255,255,255,0.07);--border-hi:rgba(255,255,255,0.13);
+  --tx1:#F4F4F4;--tx2:#9CA3AF;--tx3:#6B7280;
+  --t1:#CD7F32;--t1l:#E09450;--t1bg:rgba(205,127,50,0.1);
+  --t2:#B0B3B8;--t2l:#D4D6DA;--t2bg:rgba(176,179,184,0.1);
+  --t3:#F5C518;--t3l:#FFD94D;--t3bg:rgba(245,197,24,0.1);
+  --t4:#A855F7;--t4l:#C084FC;--t4bg:rgba(168,85,247,0.1);
+  --green:#22C55E;--amber:#F59E0B;--red:#EF4444;
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
+}
+body{background:var(--bg);color:var(--tx1);font-family:var(--font);-webkit-font-smoothing:antialiased;padding:48px 32px 80px;min-height:100vh}
+.page{max-width:1040px;margin:0 auto}
+
+/* ── HEADER ── */
+.page-hdr{text-align:center;margin-bottom:52px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;background:var(--t3bg);border:1px solid rgba(245,197,24,0.2);border-radius:20px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:18px}
+.page-title{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:10px}
+.page-sub{font-size:16px;color:var(--tx2);max-width:520px;margin:0 auto;line-height:1.6}
+
+/* ── SECTION LABELS ── */
+.sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.sec-label::before,.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── TIER LADDER ── */
+.ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:52px}
+.tier-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 18px;position:relative;overflow:hidden;transition:border-color .2s}
+.tier-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
+.t1::before{background:linear-gradient(90deg,var(--t1),var(--t1l))}
+.t2::before{background:linear-gradient(90deg,var(--t2),var(--t2l))}
+.t3::before{background:linear-gradient(90deg,var(--t3),var(--t3l))}
+.t4::before{background:linear-gradient(90deg,var(--t4),var(--t4l))}
+.tier-badge-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.tier-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;flex-shrink:0}
+.tier-name{font-size:18px;font-weight:800;letter-spacing:-.4px}
+.tier-vol{font-size:12px;color:var(--tx2);margin-bottom:14px;font-weight:500}
+.tier-benefits{display:flex;flex-direction:column;gap:7px}
+.benefit-line{display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.benefit-label{color:var(--tx2)}
+.benefit-val{font-weight:700}
+.tier-arrow{position:absolute;right:-7px;top:50%;transform:translateY(-50%);width:14px;height:14px;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:10}
+
+/* ── MAIN FLOW ── */
+.flow{display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr;align-items:start;gap:0;margin-bottom:52px}
+.flow-col{display:flex;flex-direction:column;gap:12px}
+.flow-connector{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:80px}
+.flow-connector-line{width:2px;height:40px;background:var(--border-hi)}
+.flow-connector-arrow{color:var(--tx3);font-size:18px;line-height:1}
+.flow-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+.flow-step-num{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--tx3);margin-bottom:6px}
+.flow-step-title{font-size:16px;font-weight:800;letter-spacing:-.3px;margin-bottom:6px;line-height:1.2}
+.flow-step-body{font-size:13px;color:var(--tx2);line-height:1.55}
+.flow-step-body strong{color:var(--tx1)}
+.flow-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:10px}
+.tag-green{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:var(--green)}
+.tag-amber{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);color:var(--amber)}
+.tag-red{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:var(--red)}
+.tag-tier{border-radius:6px;font-size:9px}
+
+/* ── WINDOW TIMELINE ── */
+.window-block{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:52px}
+.window-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:16px}
+.window-hdr-left h3{font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:4px}
+.window-hdr-left p{font-size:13px;color:var(--tx2);line-height:1.5}
+.window-guarantee{background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:10px 14px;text-align:center;flex-shrink:0}
+.wg-label{font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:2px}
+.wg-val{font-size:22px;font-weight:900;color:var(--green);letter-spacing:-1px}
+.wg-sub{font-size:10px;color:var(--tx3)}
+.timeline{position:relative;padding:24px 0 8px}
+.tl-track{height:6px;background:var(--surface);border-radius:99px;position:relative;margin-bottom:20px}
+.tl-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--t1),var(--t1l));width:60%;position:relative}
+.tl-fill::after{content:'▲';position:absolute;right:-8px;top:-14px;font-size:10px;color:var(--t1);transform:rotate(90deg)}
+.tl-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-bottom:24px}
+.tl-events{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tl-event{background:var(--surface);border-radius:10px;padding:12px;border:1px solid var(--border)}
+.tl-event-day{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3);margin-bottom:4px}
+.tl-event-text{font-size:12px;color:var(--tx2);line-height:1.45}
+.tl-event-text strong{color:var(--tx1)}
+
+/* ── RENEWAL OUTCOMES ── */
+.outcomes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:52px}
+.outcome{border-radius:16px;padding:20px;border:1px solid;position:relative}
+.outcome-renew{background:rgba(34,197,94,0.05);border-color:rgba(34,197,94,0.2)}
+.outcome-drop{background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.2)}
+.outcome-lost{background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.15)}
+.outcome-icon{font-size:28px;margin-bottom:10px;display:block}
+.outcome-title{font-size:16px;font-weight:800;letter-spacing:-.3px;margin-bottom:5px}
+.outcome-renew .outcome-title{color:var(--green)}
+.outcome-drop .outcome-title{color:var(--amber)}
+.outcome-lost .outcome-title{color:var(--red)}
+.outcome-condition{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:6px;display:inline-block;margin-bottom:10px}
+.outcome-renew .outcome-condition{background:rgba(34,197,94,0.1);color:var(--green)}
+.outcome-drop .outcome-condition{background:rgba(245,158,11,0.1);color:var(--amber)}
+.outcome-lost .outcome-condition{background:rgba(239,68,68,0.1);color:var(--red)}
+.outcome-body{font-size:13px;color:var(--tx2);line-height:1.55}
+.outcome-body strong{color:var(--tx1)}
+
+/* ── STATUS CHIP STRIP ── */
+.chip-strip{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:52px}
+.chip-strip-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}
+.chip-strip-hdr h3{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.chip-strip-hdr p{font-size:13px;color:var(--tx2)}
+.chips-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.chip-item{border-radius:12px;padding:16px;border:1px solid}
+.chip-comfortable{background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.18)}
+.chip-on_track{background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.18)}
+.chip-at_risk{background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.18)}
+.chip-expiring{background:rgba(255,255,255,0.03);border-color:var(--border-hi)}
+.chip-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0}
+.chip-label{font-size:13px;font-weight:700;display:flex;align-items:center;margin-bottom:6px}
+.chip-comfortable .chip-label{color:var(--green)}
+.chip-on_track .chip-label{color:var(--amber)}
+.chip-at_risk .chip-label{color:var(--red)}
+.chip-expiring .chip-label{color:var(--tx2)}
+.chip-comfortable .chip-dot{background:var(--green)}
+.chip-on_track .chip-dot{background:var(--amber)}
+.chip-at_risk .chip-dot{background:var(--red)}
+.chip-expiring .chip-dot{background:var(--tx3)}
+.chip-condition{font-size:11px;color:var(--tx2);line-height:1.5;margin-bottom:8px}
+.chip-action{font-size:11px;font-weight:600;line-height:1.4}
+.chip-comfortable .chip-action{color:var(--green)}
+.chip-on_track .chip-action{color:var(--amber)}
+.chip-at_risk .chip-action{color:var(--red)}
+.chip-expiring .chip-action{color:var(--tx3)}
+
+/* ── EDGE CASES ── */
+.edge-cases{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:52px}
+.ec{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.ec-icon{font-size:20px}
+.ec-title{font-size:14px;font-weight:700;letter-spacing:-.2px}
+.ec-body{font-size:12px;color:var(--tx2);line-height:1.55}
+.ec-body strong{color:var(--tx1)}
+
+/* ── FOOTER RULE ── */
+.rule{height:1px;background:var(--border);margin-bottom:24px}
+.footer{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--tx3)}
+
+/* ── HORIZONTAL CONNECTOR ── */
+.h-connector{display:flex;align-items:center;justify-content:center;gap:0}
+.h-arr{width:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;padding-top:52px}
+.h-arr-line{width:100%;height:1.5px;background:var(--border-hi)}
+.h-arr-head{color:var(--tx3);font-size:12px;margin-left:-2px}
+
+/* ── KEY NUMBERS STRIP ── */
+.kn-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:14px;overflow:hidden;margin-bottom:52px}
+.kn{background:var(--card);padding:16px 18px}
+.kn-tier{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.kn-vol{font-size:20px;font-weight:900;letter-spacing:-1px;margin-bottom:2px}
+.kn-vol-sub{font-size:10px;color:var(--tx3);margin-bottom:10px}
+.kn-items{display:flex;flex-direction:column;gap:4px}
+.kn-item{font-size:12px;display:flex;align-items:center;justify-content:space-between}
+.kn-item-lbl{color:var(--tx2)}
+.kn-item-val{font-weight:700}
+
+/* ── UPGRADE PATH ── */
+.upgrade-path{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:52px}
+.upgrade-hdr{margin-bottom:20px}
+.upgrade-hdr h3{font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:4px}
+.upgrade-hdr p{font-size:13px;color:var(--tx2);line-height:1.5}
+.upgrade-row{display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:4px}
+.upgrade-node{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.un-circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;position:relative;border:2px solid}
+.un-label{font-size:11px;font-weight:700;text-align:center}
+.un-sub{font-size:10px;color:var(--tx3);text-align:center;max-width:80px;line-height:1.3}
+.upgrade-edge{flex:1;min-width:28px;display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;padding-bottom:28px}
+.ue-line{height:1.5px;width:100%;background:var(--border-hi);position:relative}
+.ue-arrow{color:var(--tx3);font-size:10px;margin-left:-1px}
+.ue-label{font-size:9px;color:var(--tx3);text-align:center;max-width:100px;line-height:1.3;font-style:italic}
+.ue-new-clock{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--green);text-align:center}
+
+/* reset badge note */
+.reset-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.15);border-radius:20px;font-size:10px;font-weight:700;color:var(--green);margin-top:4px}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-hdr">
+    <div class="eyebrow">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="5"/></svg>
+      Season 3 · VIP Badges
+    </div>
+    <div class="page-title">How VIP Badges Work</div>
+    <div class="page-sub">Trade volume unlocks a badge. The badge guarantees benefits for 30 days. Keep trading to renew it.</div>
+  </div>
+
+  <!-- SECTION 1: THE TIERS 
+  <div class="sec-label">The four tiers</div>
+  <div class="kn-strip" style="margin-bottom:52px">
+    <div class="kn">
+      <div class="kn-tier" style="color:var(--t1)">VIP-1</div>
+      <div class="kn-vol" style="color:var(--t1)">$2M+</div>
+      <div class="kn-vol-sub">30-day trading volume</div>
+      <div class="kn-items">
+        <div class="kn-item"><span class="kn-item-lbl">Cashback on card</span><span class="kn-item-val" style="color:var(--t1)">1.5%</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Cashback cap</span><span class="kn-item-val">$1,500</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Hotel voucher</span><span class="kn-item-val">$150 × 2</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Experience voucher</span><span class="kn-item-val">$50 × 2</span></div>
+      </div>
+    </div>
+    <div class="kn">
+      <div class="kn-tier" style="color:var(--t2)">VIP-2</div>
+      <div class="kn-vol" style="color:var(--t2)">$10M+</div>
+      <div class="kn-vol-sub">30-day trading volume</div>
+      <div class="kn-items">
+        <div class="kn-item"><span class="kn-item-lbl">Cashback on card</span><span class="kn-item-val" style="color:var(--t2)">3%</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Cashback cap</span><span class="kn-item-val">$2,000</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Hotel voucher</span><span class="kn-item-val">$350 × 2</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Experience voucher</span><span class="kn-item-val">$150 × 2</span></div>
+      </div>
+    </div>
+    <div class="kn">
+      <div class="kn-tier" style="color:var(--t3)">VIP-3</div>
+      <div class="kn-vol" style="color:var(--t3)">$30M+</div>
+      <div class="kn-vol-sub">30-day trading volume</div>
+      <div class="kn-items">
+        <div class="kn-item"><span class="kn-item-lbl">Cashback on card</span><span class="kn-item-val" style="color:var(--t3)">6%</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Cashback cap</span><span class="kn-item-val">$5,000</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Hotel voucher</span><span class="kn-item-val">$750 × 2</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Experience voucher</span><span class="kn-item-val">$250 × 2</span></div>
+      </div>
+    </div>
+    <div class="kn">
+      <div class="kn-tier" style="color:var(--t4)">VIP-4</div>
+      <div class="kn-vol" style="color:var(--t4)">$100M+</div>
+      <div class="kn-vol-sub">30-day trading volume</div>
+      <div class="kn-items">
+        <div class="kn-item"><span class="kn-item-lbl">Cashback on card</span><span class="kn-item-val" style="color:var(--t4)">8%</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Cashback cap</span><span class="kn-item-val">$10,000</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Hotel voucher</span><span class="kn-item-val">$1,500 × 2</span></div>
+        <div class="kn-item"><span class="kn-item-lbl">Experience voucher</span><span class="kn-item-val">$1,000 × 2</span></div>
+      </div>
+    </div>
+  </div>
+-->
+  <!-- SECTION 2: THE LIFECYCLE -->
+  <div class="sec-label">The core lifecycle — earn, hold, renew</div>
+  <div class="flow" style="margin-bottom:52px">
+    <!-- COL 1: EARN -->
+    <div class="flow-col">
+      <div class="flow-box">
+        <div class="flow-step-num">Step 1 · Earn</div>
+        <div class="flow-step-title">Trade hits the threshold</div>
+        <div class="flow-step-body">
+          Trade on <strong>Hyperliquid</strong> or <strong>Decibel</strong>. The moment your accumulated 30-day trading volume crosses $2M, your badge fires — <strong>instantly</strong>, not at end of day.
+          <br><br>Volume = buys + sells at full notional. A $1M round-trip = $2M of volume.
+        </div>
+        <span class="flow-tag tag-green">⚡ Real-time trigger</span>
+      </div>
+      <div class="flow-box" style="border-color:var(--border-hi)">
+        <div class="flow-step-num">Important</div>
+        <div class="flow-step-title">Benefits are live immediately</div>
+        <div class="flow-step-body">The moment the badge activates, the next card transaction earns elevated cashback. Voucher slots unlock right away. No waiting period.</div>
+      </div>
+    </div>
+
+    <!-- CONNECTOR -->
+    <div class="h-arr">
+      <div style="height:24px"></div>
+      <div style="display:flex;align-items:center;width:100%">
+        <div class="h-arr-line"></div>
+        <div class="h-arr-head">›</div>
+      </div>
+    </div>
+
+    <!-- COL 2: HOLD -->
+    <div class="flow-col">
+      <div class="flow-box" style="border-color:rgba(34,197,94,0.3)">
+        <div class="flow-step-num">Step 2 · Hold</div>
+        <div class="flow-step-title" style="color:var(--green)">30-day guarantee</div>
+        <div class="flow-step-body">
+          From trigger to <strong>EOD of day 30</strong>, your badge <strong>cannot be downgraded</strong> — regardless of what you trade (or don't). This is the sacrosanct shelf.
+          <br><br>The countdown is shown prominently in the app. Benefits run for the full 30 days.
+        </div>
+        <span class="flow-tag tag-green">🔒 No downgrades during window</span>
+      </div>
+      <div class="flow-box">
+        <div class="flow-step-num">Inside the window</div>
+        <div class="flow-step-title">Upgrade triggers a fresh clock</div>
+        <div class="flow-step-body">
+          Keep trading and hit the next milestone (<strong>$10M, $30M, $100M</strong>) at any point during your window — your badge upgrades instantly to the higher tier and a <strong>new 30-day window opens</strong> at that tier.
+        </div>
+        <span class="flow-tag tag-amber">⬆ New clock on upgrade</span>
+      </div>
+    </div>
+
+    <!-- CONNECTOR -->
+    <div class="h-arr">
+      <div style="height:24px"></div>
+      <div style="display:flex;align-items:center;width:100%">
+        <div class="h-arr-line"></div>
+        <div class="h-arr-head">›</div>
+      </div>
+    </div>
+
+    <!-- COL 3: RENEW -->
+    <div class="flow-col">
+      <div class="flow-box">
+        <div class="flow-step-num">Step 3 · Window end (Day 30 EOD)</div>
+        <div class="flow-step-title">One evaluation. Three outcomes.</div>
+        <div class="flow-step-body">
+          At <strong>23:59:59 UTC on day 30</strong>, the system checks: <em>"How much did you trade since this window opened?"</em>
+          <br><br>
+          <strong style="color:var(--green)">≥ floor threshold</strong> → badge renews, fresh 30 days<br>
+          <strong style="color:var(--amber)">≥ lower tier threshold</strong> → drops to that tier<br>
+          <strong style="color:var(--red)">&lt; $2M</strong> → badge is lost
+        </div>
+      </div>
+      <div class="flow-box" style="border-color:var(--border-hi)">
+        <div class="flow-step-num">After renewal</div>
+        <div class="flow-step-title">New window opens at $0</div>
+        <div class="flow-step-body">Every new window starts with zero accumulated volume. The status chip tells you in real-time whether you're on track to renew again.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: UPGRADE PATH VISUAL -->
+  <div class="sec-label">Upgrade path within a window</div>
+  <div class="upgrade-path">
+    <div class="upgrade-hdr">
+      <h3>Hit the next milestone anytime — your clock resets</h3>
+      <p>You don't wait for day 30 to upgrade. The moment your accumulated volume crosses the next threshold, the upgrade fires and a fresh 30-day window opens at the new tier. You can skip tiers in a single large trade.</p>
+    </div>
+    <div class="upgrade-row">
+      <!-- No badge -->
+      <div class="upgrade-node">
+        <div class="un-circle" style="background:var(--surface);border-color:var(--border);color:var(--tx3)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+        </div>
+        <div class="un-label" style="color:var(--tx3)">No badge</div>
+        <div class="un-sub">0 → $2M</div>
+      </div>
+      <div class="upgrade-edge">
+        <div class="ue-line"><div style="position:absolute;right:-4px;top:-4px;color:var(--tx3);font-size:10px">›</div></div>
+        <div class="ue-label">Hit $2M</div>
+      </div>
+      <!-- VIP-1 -->
+      <div class="upgrade-node">
+        <div class="un-circle" style="background:var(--t1bg);border-color:var(--t1);color:var(--t1)">1</div>
+        <div class="un-label" style="color:var(--t1)">VIP-1</div>
+        <div class="un-sub">$2M – $10M</div>
+        <div class="reset-badge">↺ 30 days</div>
+      </div>
+      <div class="upgrade-edge">
+        <div class="ue-line"><div style="position:absolute;right:-4px;top:-4px;color:var(--tx3);font-size:10px">›</div></div>
+        <div class="ue-label">Hit $10M total</div>
+        <div class="ue-new-clock">any time</div>
+      </div>
+      <!-- VIP-2 -->
+      <div class="upgrade-node">
+        <div class="un-circle" style="background:var(--t2bg);border-color:var(--t2);color:var(--t2)">2</div>
+        <div class="un-label" style="color:var(--t2)">VIP-2</div>
+        <div class="un-sub">$10M – $30M</div>
+        <div class="reset-badge">↺ 30 days</div>
+      </div>
+      <div class="upgrade-edge">
+        <div class="ue-line"><div style="position:absolute;right:-4px;top:-4px;color:var(--tx3);font-size:10px">›</div></div>
+        <div class="ue-label">Hit $30M total</div>
+        <div class="ue-new-clock">any time</div>
+      </div>
+      <!-- VIP-3 -->
+      <div class="upgrade-node">
+        <div class="un-circle" style="background:var(--t3bg);border-color:var(--t3);color:var(--t3)">3</div>
+        <div class="un-label" style="color:var(--t3)">VIP-3</div>
+        <div class="un-sub">$30M – $100M</div>
+        <div class="reset-badge">↺ 30 days</div>
+      </div>
+      <div class="upgrade-edge">
+        <div class="ue-line"><div style="position:absolute;right:-4px;top:-4px;color:var(--tx3);font-size:10px">›</div></div>
+        <div class="ue-label">Hit $100M total</div>
+        <div class="ue-new-clock">any time</div>
+      </div>
+      <!-- VIP-4 -->
+      <div class="upgrade-node">
+        <div class="un-circle" style="background:var(--t4bg);border-color:var(--t4);color:var(--t4)">4</div>
+        <div class="un-label" style="color:var(--t4)">VIP-4</div>
+        <div class="un-sub">$100M+</div>
+        <div class="reset-badge">↺ 30 days</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:12px 14px;background:var(--surface);border-radius:10px;font-size:12px;color:var(--tx2);border:1px solid var(--border)">
+      <strong style="color:var(--tx1)">Skip tiers:</strong> a single large trade can jump you from VIP-1 straight to VIP-3. The highest qualifying tier activates directly. No incremental animation — one celebration for the final tier.
+    </div>
+  </div>
+
+  <!-- SECTION 4: THE THREE OUTCOMES -->
+  <div class="sec-label">What happens at day 30</div>
+  <div class="outcomes">
+    <div class="outcome outcome-renew">
+      <span class="outcome-icon">🔄</span>
+      <div class="outcome-condition">Volume ≥ floor threshold</div>
+      <div class="outcome-title">Badge renews</div>
+      <div class="outcome-body">Same tier continues for another <strong>30 days</strong>. New window opens at $0 accumulated volume. Quiet acknowledgment in the app — no big celebration.</div>
+    </div>
+    <div class="outcome outcome-drop">
+      <span class="outcome-icon">⬇</span>
+      <div class="outcome-condition">Volume qualifies a lower tier</div>
+      <div class="outcome-title">Badge drops</div>
+      <div class="outcome-body">e.g. VIP-2 holder accumulated $6M — only enough for VIP-1. Badge moves to <strong>VIP-1 for 30 days</strong>. User sees the gap to regain VIP-2 ($4M more). Can trade back up anytime.</div>
+    </div>
+    <div class="outcome outcome-lost">
+      <span class="outcome-icon">✕</span>
+      <div class="outcome-condition">Volume &lt; $2M</div>
+      <div class="outcome-title">Badge is lost</div>
+      <div class="outcome-body">No VIP badge. Screen shows progress toward VIP-1 re-earn. The moment they hit $2M again — <strong>badge fires instantly</strong>, fresh 30-day window opens.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: IN-APP STATUS SIGNALS 
+  <div class="sec-label">In-app status signals — the chip</div>
+  <div class="chip-strip">
+    <div class="chip-strip-hdr">
+      <h3>How users know where they stand</h3>
+      <p style="font-size:13px;color:var(--tx2)">One chip. Four states. Updates as their trading pace changes within the window.</p>
+    </div>
+    <div class="chips-grid">
+      <div class="chip-item chip-comfortable">
+        <div class="chip-label"><span class="chip-dot"></span>Comfortable</div>
+        <div class="chip-condition">Projected volume at day 30 ≥ 120% of threshold</div>
+        <div class="chip-action">No action needed. User sees a green signal and keeps trading naturally.</div>
+      </div>
+      <div class="chip-item chip-on_track">
+        <div class="chip-label"><span class="chip-dot"></span>On track</div>
+        <div class="chip-condition">Projected volume at day 30 is 100–120% of threshold</div>
+        <div class="chip-action">Nudge state. Numbers are visible in the expandable detail layer.</div>
+      </div>
+      <div class="chip-item chip-at_risk">
+        <div class="chip-label"><span class="chip-dot"></span>At risk</div>
+        <div class="chip-condition">Projected volume below threshold AND ≥5 days remain</div>
+        <div class="chip-action">Dollar gap surfaced explicitly. "Trade $X more in N days to lock in 30 more days of VIP-N." Deep links to Hyperliquid + Decibel.</div>
+      </div>
+      <div class="chip-item chip-expiring">
+        <div class="chip-label"><span class="chip-dot"></span>Expiring soon</div>
+        <div class="chip-condition">Projected volume below threshold AND &lt;5 days remain</div>
+        <div class="chip-action">No dollar target (not enough time to act). Informational only: "likely to expire in N days — re-earn it soon."</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;padding:12px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);font-size:12px;color:var(--tx2)">
+      <strong style="color:var(--tx1)">Design principle:</strong> the "how much to maintain" dollar number is hidden in normal states. It only surfaces in the At Risk state, when the user has actionable time and a specific target to hit. Daily math churn never reaches the user's eyes by default.
+    </div>
+  </div> -->
+
+  <!-- SECTION 6: EDGE CASES -->
+  <div class="sec-label">Key scenarios to know</div>
+  <div class="edge-cases">
+      <!--
+    <div class="ec">
+      <div class="ec-icon">🚀</div>
+      <div class="ec-title">Lump activation, then nothing</div>
+      <div class="ec-body">User trades $2.5M on day 1, activates VIP-1, trades nothing more. Badge renews at day 30 (that $2.5M is within the window). New window opens at $0. AT RISK fires immediately on the new window — <strong>honest and expected</strong>, not a bug. User needs $2M in the new 30 days to renew again.</div>
+    </div> -->
+    <div class="ec">
+      <div class="ec-icon">↕</div>
+      <div class="ec-title">Upgrade resets everything</div>
+      <div class="ec-body">On day 8 of VIP-1, user hits $10M → upgrades to VIP-2 with a <strong>fresh 30-day window</strong>. Old window closes. Prior unredeemed vouchers are forfeited. Already-redeemed vouchers are never clawed back.</div>
+    </div>
+    <!--
+    <div class="ec">
+      <div class="ec-icon">⏩</div>
+      <div class="ec-title">Skip a tier in one trade</div>
+      <div class="ec-body">One $50M trade from $1M of prior volume → window-accumulated volume hits $51M, crossing VIP-1, VIP-2, and landing in VIP-3. <strong>VIP-3 activates directly</strong>. Celebration shows the skip: "You jumped straight to VIP-3." No incremental VIP-1 → VIP-2 → VIP-3 sequence.</div>
+    </div> -->
+    
+    <div class="ec">
+      <div class="ec-icon">⬇</div>
+      <div class="ec-title">Drop, then trade back up</div>
+      <div class="ec-body">VIP-2 holder drops to VIP-1 at window end ($6M accumulated, below $10M floor). VIP-1 window opens. They trade back to $10M inside the new VIP-1 window — <strong>upgrades to VIP-2</strong> in real-time, new 30-day VIP-2 window opens.</div>
+    </div>
+    <!--
+    <div class="ec">
+      <div class="ec-icon">✕</div>
+      <div class="ec-title">Badge lost, re-earned same day</div>
+      <div class="ec-body">Badge expires at 23:59:59 UTC. A large trade settles at 00:00:02 the next day — badge re-activates in real-time. The lapse is ~2 seconds. User sees a quiet re-earn toast, not a full celebration (suppressed for rapid re-earns).</div>
+    </div>
+    
+    <div class="ec">
+      <div class="ec-icon">🔄</div>
+      <div class="ec-title">Reversed trade mid-window</div>
+      <div class="ec-body">A settled trade is reversed by the venue (dispute, bad print). <strong>The badge is not pulled during an active window</strong> — the guarantee is absolute. The reversal adjusts the ledger for the next window evaluation only. Trust-cost of mid-window clawbacks is too high.</div>
+    </div>
+    -->
+  </div>
+
+  <!-- FOOTER -->
+  <div class="rule"></div>
+</div>
+</body>
+</html>
